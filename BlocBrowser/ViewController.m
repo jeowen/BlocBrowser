@@ -50,7 +50,7 @@
     self.textField.returnKeyType = UIReturnKeyDone;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
-    self.textField.placeholder = NSLocalizedString(@"Website URL", @"Placeholder text for web browser URL field");
+    self.textField.placeholder = NSLocalizedString(@"Website URL or SEARCH", @"Placeholder text for web browser URL field");
     self.textField.backgroundColor = [UIColor colorWithWhite:220/255.0f alpha:1];
     self.textField.delegate = self;
     
@@ -140,7 +140,38 @@
     
     NSString *URLString = textField.text;
     
-    NSURL *URL = [NSURL URLWithString:URLString];
+    // see if the URLString contains any spaces, if so- capture the search terms
+    // ----------------------
+
+    NSMutableString *string2 = [NSMutableString stringWithString: URLString];
+    NSString *searchPreamble = @"http://google.com/search?q=";
+
+    NSString *returnURL;
+    
+    NSRange whiteSpaceRange = [string2 rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]];
+    if (whiteSpaceRange.location != NSNotFound) {
+        NSLog(@"Found whitespace");
+        // replace whitespace with +
+       // [string2 stringByReplacingOccurrencesOfString:@"\s" withString:@"+"];
+        NSString *stringCastBack = [NSString stringWithFormat:@"%@", string2];
+        stringCastBack = [stringCastBack stringByReplacingOccurrencesOfString:@" "
+                                             withString:@"+"];
+        NSLog(@"in whitespace FOUND, stringCastBack after replacement = %@", stringCastBack);
+        // add search query to searchPreamble and return returnURL
+        returnURL = [NSString stringWithFormat:@"%@%@", searchPreamble, stringCastBack];
+        NSLog(@"in whitespace FOUND, return URL = %@", returnURL);
+        
+    }
+    else{
+        NSLog(@"Did NOT find whitespace");
+        returnURL = [NSString stringWithFormat:@"%@", URLString];
+        NSLog(@"in whitespace NOTNOTNOT FOUND, return URL = %@", returnURL);
+    }
+    
+    // ----------------------
+    // replace URLString with http://www.google.com/search?q=charlie+bit+my+finger
+    
+    NSURL *URL = [NSURL URLWithString:returnURL];
     
     // process missing http://
     if (!URL.scheme) {

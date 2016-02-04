@@ -28,6 +28,16 @@
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
     // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
+    
+    // for BlocBrowser, reset the URL & webview to clear history
+    //1. obtains a reference to the navigation controller (we know it's the root view controller),
+    UINavigationController *navigationVC = (UINavigationController *)self.window.rootViewController;
+    
+    //2. obtains a reference to that its first view controller (which is a ViewController instance),
+    ViewController *browserVC = [[navigationVC viewControllers] firstObject];
+    
+    //3. sends it the resetWebView message.
+    [browserVC resetWebView];
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application {

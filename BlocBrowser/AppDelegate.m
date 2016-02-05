@@ -9,6 +9,7 @@
 #import "AppDelegate.h"
 #import "ViewController.h"
 
+
 @interface AppDelegate ()
 
 @end
@@ -18,10 +19,49 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    // display a welcome message when the app is launched
+    
+    NSLog(@"*** APPLICATION LAUNCHED *** \n^\n||\n||\n||\n||\n||\n||\n||\n||\n||\n****\n****\n****\n****\n****\n****\n****\n****\n***\n***\n***\n***\n");
+    
+    // set up and create an NSError object
+    // 1. declare the error domain
+    NSString *domain = @"com.MyCompany.MyApplication.ErrorDomain";
+    
+    // 2. create a dictionary of possible user info, including but not limited to simple error message
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: NSLocalizedString(@"Operation was unsuccessful- you launched the app and somehow managed to display an alert message- bravo!!!.", nil),
+                               NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The operation timed out.", nil),
+                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Have you tried turning it off and on again?", nil)
+                               };
+    NSError *error = [NSError errorWithDomain:domain
+                                         code:-57
+                                     userInfo:userInfo];
+    
+    // FINALLY, display the ALERT to display :)
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"Error")
+                                                                   message:[error localizedDescription]
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleCancel handler:nil];
+    
+    [alert addAction:okAction];
+
+    
+    // [self.window presentViewController:alert animated:YES completion:nil];
+    
+    ViewController *myView = [[ViewController alloc] init];
+    [myView presentViewController:alert animated:YES completion:nil ];
+     
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     self.window.backgroundColor = [UIColor whiteColor];
-    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:[[ViewController alloc] init]];
+    self.window.rootViewController = [[UINavigationController alloc] initWithRootViewController:myView];
     [self.window makeKeyAndVisible];
+
+    
+
+    
     return YES;
 }
 

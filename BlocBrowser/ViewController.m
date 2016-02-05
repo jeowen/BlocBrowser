@@ -46,7 +46,7 @@
     
     // Finally build the text field and add it as a subview of the main view:
     self.textField = [[UITextField alloc] init];
-    self.textField.keyboardType = UIKeyboardTypeURL;
+    self.textField.keyboardType = UIKeyboardTypeWebSearch;
     self.textField.returnKeyType = UIReturnKeyDone;
     self.textField.autocapitalizationType = UITextAutocapitalizationTypeNone;
     self.textField.autocorrectionType = UITextAutocorrectionTypeNo;
@@ -324,5 +324,44 @@
     [self.reloadButton addTarget:self.webView action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
 }
 
+#pragma mark - show alert on launch
+- (void) welcomeMessage {
+    // set up and create an NSError object
+    // 1. declare the error domain
+    NSString *domain = @"com.MyCompany.MyApplication.ErrorDomain";
+    NSLog(@"hullooo!\n");
+    // 2. create a dictionary of possible user info, including but not limited to simple error message
+    
+
+    NSDictionary *userInfo = @{
+                               NSLocalizedDescriptionKey: NSLocalizedString(@"Welcome back to the simplicity of the past!  Sit back, relax, and enjoy a hassle-free browsing experience.", nil),
+                               NSLocalizedFailureReasonErrorKey: NSLocalizedString(@"The operation timed out.", nil),
+                               NSLocalizedRecoverySuggestionErrorKey: NSLocalizedString(@"Have you tried turning it off and on again?", nil)
+                               };
+    NSError *error = [NSError errorWithDomain:domain
+                                         code:-57
+                                     userInfo:userInfo];
+    
+    // FINALLY, display the ALERT to display :)
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Netscape 1.0", @"Netscape 1.0")
+                                                                   message:[error localizedDescription]
+                                                            preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *okAction = [UIAlertAction actionWithTitle:NSLocalizedString(@"OK", nil)
+                                                       style:UIAlertActionStyleCancel handler:nil];
+    
+    [alert addAction:okAction];
+    
+    
+    // [self.window presentViewController:alert animated:YES completion:nil];
+//    
+//    ViewController *myView = [[ViewController alloc] init];
+//    [myView presentViewController:alert animated:YES completion:nil ];
+
+
+    
+    [self presentViewController:alert animated:YES completion:nil];
+NSLog(@"haaallooo!\n");
+}
 
 @end

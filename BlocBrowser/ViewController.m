@@ -8,11 +8,17 @@
 
 #import "ViewController.h"
 #import <WebKit/WebKit.h>
+#import "AwesomeFloatingToolbar.h"
+
+#define kWebBrowserBackString NSLocalizedString(@"Back", @"Back command")
+#define kWebBrowserForwardString NSLocalizedString(@"Forward", @"Forward command")
+#define kWebBrowserStopString NSLocalizedString(@"Stop", @"Stop command")
+#define kWebBrowserRefreshString NSLocalizedString(@"Refresh", @"Reload command")
 
 
 // In order to use our view controller as the delegate for the WKWebView we need to declare that our controller conforms to the WKNavigationDelegate protocol:
 
- @interface ViewController () <WKNavigationDelegate>
+@interface ViewController () <WKNavigationDelegate, UITextFieldDelegate, AwesomeFloatingToolbarDelegate>
 
 @property (nonatomic, strong) WKWebView *webView;
 
@@ -20,10 +26,7 @@
 @property (nonatomic, strong) UITextField *textField;
 
 // build the navigation bar
-@property (nonatomic, strong) UIButton *backButton;
-@property (nonatomic, strong) UIButton *forwardButton;
-@property (nonatomic, strong) UIButton *stopButton;
-@property (nonatomic, strong) UIButton *reloadButton;
+@property (nonatomic, strong) AwesomeFloatingToolbar *awesomeToolbar;
 
 // add activity indicator spinner animation (subview)
 @property (nonatomic, strong) UIActivityIndicatorView *activityIndicator;
@@ -55,31 +58,8 @@
     self.textField.delegate = self;
     
     // create buttons, default = OFF
-    self.backButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.backButton setEnabled:NO];
-    
-    self.forwardButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.forwardButton setEnabled:NO];
-    
-    self.stopButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.stopButton setEnabled:NO];
-    
-    self.reloadButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.reloadButton setEnabled:NO];
-    
-    
-    [self.backButton setTitle:NSLocalizedString(@"Back", @"Back command") forState:UIControlStateNormal];
-    // [self.backButton addTarget:self.webView action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.forwardButton setTitle:NSLocalizedString(@"Forward", @"Forward command") forState:UIControlStateNormal];
-    // [self.forwardButton addTarget:self.webView action:@selector(goForward) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.stopButton setTitle:NSLocalizedString(@"Stop", @"Stop command") forState:UIControlStateNormal];
-    // [self.stopButton addTarget:self.webView action:@selector(stopLoading) forControlEvents:UIControlEventTouchUpInside];
-    
-    [self.reloadButton setTitle:NSLocalizedString(@"Refresh", @"Reload command") forState:UIControlStateNormal];
-    // [self.reloadButton addTarget:self.webView action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-
+    self.awesomeToolbar = [[AwesomeFloatingToolbar alloc] initWithFourTitles:@[kWebBrowserBackString, kWebBrowserForwardString, kWebBrowserStopString, kWebBrowserRefreshString]];
+    self.awesomeToolbar.delegate = self;
     
 //    
 //    NSString *urlString = @"http://wikipedia.org";
@@ -88,20 +68,20 @@
 //    [self.webView loadRequest:request];
     
     
-    // add web view and textField for URL to main view
-    [mainView addSubview:self.webView];
-    [mainView addSubview:self.textField];
-    
-    // add buttons to main view
-    [mainView addSubview:self.backButton];
-    [mainView addSubview:self.forwardButton];
-    [mainView addSubview:self.stopButton];
-    [mainView addSubview:self.reloadButton];
+//    // add web view and textField for URL to main view
+//    [mainView addSubview:self.webView];
+//    [mainView addSubview:self.textField];
+//    
+//    // add buttons to main view
+//    [mainView addSubview:self.backButton];
+//    [mainView addSubview:self.forwardButton];
+//    [mainView addSubview:self.stopButton];
+//    [mainView addSubview:self.reloadButton];
     
     // we can make above code shorter with this loop:
-//    for (UIView *viewToAdd in @[self.webView, self.textField, self.backButton, self.forwardButton, self.stopButton, self.reloadButton]) {
-//        [mainView addSubview:viewToAdd];
-//    }
+for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) {
+        [mainView addSubview:viewToAdd];
+   }
     
     self.view = mainView;
 }
@@ -117,8 +97,7 @@
     // First, calculate some dimensions.
     static const CGFloat itemHeight = 50;
     CGFloat width = CGRectGetWidth(self.view.bounds);
-    CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight - itemHeight;
-    CGFloat buttonWidth = CGRectGetWidth(self.view.bounds) / 4;
+CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
 
     
     // Now, assign the frames
@@ -126,13 +105,21 @@
     self.webView.frame = CGRectMake(0, CGRectGetMaxY(self.textField.frame), width, browserHeight);
 
     // add a loop to handle positioning of each button
-    CGFloat currentButtonX = 0;
+self.awesomeToolbar.frame = CGRectMake(20, 100, 280, 60);
     
-    for (UIButton *thisButton in @[self.backButton, self.forwardButton, self.stopButton, self.reloadButton]) {
-        thisButton.frame = CGRectMake(currentButtonX, CGRectGetMaxY(self.webView.frame), buttonWidth, itemHeight);
-        currentButtonX += buttonWidth;
+}
+#pragma mark - AwesomeFloatingToolbarDelegate
+
+- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title {
+    if ([title isEqual:NSLocalizedString(@"Back", @"Back command")]) {
+        [self.webView goBack];
+    } else if ([title isEqual:NSLocalizedString(@"Forward", @"Forward command")]) {
+        [self.webView goForward];
+    } else if ([title isEqual:NSLocalizedString(@"Stop", @"Stop command")]) {
+        [self.webView stopLoading];
+    } else if ([title isEqual:NSLocalizedString(@"Refresh", @"Reload command")]) {
+        [self.webView reload];
     }
-    
 }
  #pragma mark - UITextFieldDelegate
 //process text input for URL
@@ -249,17 +236,11 @@
     
     // update forward & back buttons
     // The logic for these is pretty simple. The enabled state for the forward and back buttons is entirely dependent on whether or not the web view can go forward or back.
-    self.backButton.enabled = [self.webView canGoBack];
-    self.forwardButton.enabled = [self.webView canGoForward];
-    
-    // As for the stop and refresh buttons, we can query the WKWebView property isLoading.
-    //  We will change the buttons' enabled state based on the current value of isLoading:
-    self.stopButton.enabled = self.webView.isLoading;
-    // self.reloadButton.enabled = !self.webView.isLoading;
-    
-    // only allow reloading if the webView state is NOT currently loading &
-    // only if there is a valid URL already, otherwise there is nothing to load
-    self.reloadButton.enabled = !self.webView.isLoading && self.webView.URL;
+    [self.awesomeToolbar setEnabled:[self.webView canGoBack] forButtonWithTitle:kWebBrowserBackString];
+    [self.awesomeToolbar setEnabled:[self.webView canGoForward] forButtonWithTitle:kWebBrowserForwardString];
+    [self.awesomeToolbar setEnabled:[self.webView isLoading] forButtonWithTitle:kWebBrowserStopString];
+    [self.awesomeToolbar setEnabled:![self.webView isLoading] && self.webView.URL forButtonWithTitle:kWebBrowserRefreshString];
+
 }
 
 
@@ -296,33 +277,15 @@
     
     //4. point the buttons to the new WebView!!  done in a new method
     //  requires declaring new method, addButtonTargets, below
-    [self addButtonTargets];
+
     
     //5. update buttons and nav title to current state
     self.textField.text = nil;
-    [self updateButtonsAndTitle];
+   
     
     
 }
 
-#pragma mark - addButtonTargets
-
-- (void) addButtonTargets {
-    
-    // PURPOSE of this METHOD: replace button targets with initial states
-    
-    // take array of buttons and remove its reference to the old webView
-    for (UIButton *button in @[self.backButton, self.forwardButton, self.stopButton, self.reloadButton]) {
-
-        [button removeTarget:nil action:NULL forControlEvents:UIControlEventTouchUpInside];
-    }
-    
-    // add the webView as a target , just as in loadView
-    [self.backButton addTarget:self.webView action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
-    [self.forwardButton addTarget:self.webView action:@selector(goForward) forControlEvents:UIControlEventTouchUpInside];
-    [self.stopButton addTarget:self.webView action:@selector(stopLoading) forControlEvents:UIControlEventTouchUpInside];
-    [self.reloadButton addTarget:self.webView action:@selector(reload) forControlEvents:UIControlEventTouchUpInside];
-}
 
 #pragma mark - show alert on launch
 - (void) welcomeMessage {

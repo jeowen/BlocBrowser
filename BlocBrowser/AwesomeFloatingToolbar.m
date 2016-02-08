@@ -8,6 +8,11 @@
 
 #import "AwesomeFloatingToolbar.h"
 
+#define kWebBrowserBackString NSLocalizedString(@"Back", @"Back command")
+#define kWebBrowserForwardString NSLocalizedString(@"Forward", @"Forward command")
+#define kWebBrowserStopString NSLocalizedString(@"Stop", @"Stop command")
+#define kWebBrowserRefreshString NSLocalizedString(@"Refresh", @"Reload command")
+
 @interface AwesomeFloatingToolbar ()
 
 @property (nonatomic, strong) NSArray *currentTitles;
@@ -146,8 +151,25 @@
     if (self.currentLabel == label) {
         NSLog(@"Label tapped: %@", self.currentLabel.text);
         
+        NSString *preDefinedLabel = [[NSString alloc] init];
+        if ([self.currentLabel.text  isEqual: @"Back"]){
+           NSLog(@"testing %@", kWebBrowserBackString);
+            preDefinedLabel = kWebBrowserBackString;
+        }
+        else if ([self.currentLabel.text isEqual: @"Stop"]){
+            NSLog(@"testing %@", kWebBrowserStopString);
+            preDefinedLabel = kWebBrowserStopString;
+        }
+        else if ([self.currentLabel.text isEqual: @"Refresh"]){
+            NSLog(@"testing %@", kWebBrowserBackString);
+            preDefinedLabel = kWebBrowserRefreshString;
+        }
+        else if ([self.currentLabel.text isEqual: @"Forward"]){
+            NSLog(@"testing %@", kWebBrowserForwardString);
+            preDefinedLabel = kWebBrowserForwardString;
+        }
         if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
-            [self.delegate floatingToolbar:self didSelectButtonWithTitle:self.currentLabel.text];
+            [self.delegate floatingToolbar:self didSelectButtonWithTitle:preDefinedLabel];
         }
     }
     

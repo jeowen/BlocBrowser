@@ -105,7 +105,7 @@ CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
     self.webView.frame = CGRectMake(0, CGRectGetMaxY(self.textField.frame), width, browserHeight);
 
     // add a loop to handle positioning of each button
-self.awesomeToolbar.frame = CGRectMake(20, 100, 280, 60);
+self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
     
 }
 #pragma mark - AwesomeFloatingToolbarDelegate

@@ -121,6 +121,21 @@ self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
         [self.webView reload];
     }
 }
+#pragma mark TOOL BAR PAN GESTURE RECOGNIZER > UPDATING FRAME (moving the frame that contains the view...)
+- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPanWithOffset:(CGPoint)offset {
+    CGPoint startingPoint = toolbar.frame.origin;
+    //We begin by getting the top-left corner of where the toolbar is currently located. newPoint is where the future top-left corner is stored by adding the difference in x and the difference in y to the original top-left coordinate. Then we create a new CGRect which represents the toolbars potential new frame.
+    
+    CGPoint newPoint = CGPointMake(startingPoint.x + offset.x, startingPoint.y + offset.y);
+    //We say potential because we want to make sure that we don't push the toolbar off the screen. CGRectContainsRect(CGRect rect1, CGRect rect2) will return YES if the rect2's bounds are contained entirely by rect1, or NO otherwise. If the test passes, we set the toolbar's new frame.
+    
+    CGRect potentialNewFrame = CGRectMake(newPoint.x, newPoint.y, CGRectGetWidth(toolbar.frame), CGRectGetHeight(toolbar.frame));
+    
+    if (CGRectContainsRect(self.view.bounds, potentialNewFrame)) {
+        toolbar.frame = potentialNewFrame;
+    }
+}
+//----------------......--------->
  #pragma mark - UITextFieldDelegate
 //process text input for URL
 - (BOOL)textFieldShouldReturn:(UITextField *)textField {

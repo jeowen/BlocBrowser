@@ -122,15 +122,19 @@
 }
 //----------------->
 # pragma mark PAN GESTURE RECOGNIZER
-- (void) panFired:(UIPanGestureRecognizer *)recognizer {
+- (void) panFired:(UIPanGestureRecognizer *)recognizer { ///??? how do these method calls work??? ///
+    // capture the state of the recognizer... if it changes, you've recognized a pan gesture
     if (recognizer.state == UIGestureRecognizerStateChanged) {
         CGPoint translation = [recognizer translationInView:self];
+        //we no longer care where the gesture occurred. What's important now is which direction it travelled in. A pan gesture recognizer's translation is how far the user's finger has moved in each direction since the touch event began. This method is called often during a pan gesture because a “full” pan as we perceive it is actually a linear collection of small pans traveling a few pixels at a time.
         
         NSLog(@"New translation: %@", NSStringFromCGPoint(translation));
         
         if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPanWithOffset:)]) {
             [self.delegate floatingToolbar:self didTryToPanWithOffset:translation];
         }
+        
+        //At the end, we reset this translation to zero (CGPointZero) so that we can get the difference of each mini-pan every time the method is called.
         
         [recognizer setTranslation:CGPointZero inView:self];
     }

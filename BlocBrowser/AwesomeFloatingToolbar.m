@@ -23,6 +23,9 @@
 // property to store the tap gesture recognizer
  @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 
+// property to recognize a pan gesture
+@property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
+
 @end
 
 
@@ -39,6 +42,7 @@
     // Drawing code
 }
 */
+#pragma mark INIT (OVERRIDE)
 - (instancetype) initWithFourTitles:(NSArray *)titles {
     // First, call the superclass (UIView)'s initializer, to make sure we do all that setup first.
     self = [super init];
@@ -86,9 +90,14 @@
     // #2
     [self addGestureRecognizer:self.tapGesture];
     
+    // initialize a PAN GESTURE RECOGNIZER from property panGesture declared above
+    self.panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panFired:)];
+    [self addGestureRecognizer:self.panGesture];
+    
     return self;
 }
 //-------------->
+#pragma mark TAP GESTURE RECOGNIZER
 //IMPLEMENT TAP GESTURE RECOGNIZER (TAP FIRED METHOD) (in self, which is a UIView object)
 - (void) tapFired:(UITapGestureRecognizer *)recognizer {
     
@@ -112,6 +121,21 @@
     }
 }
 //----------------->
+# pragma mark PAN GESTURE RECOGNIZER
+- (void) panFired:(UIPanGestureRecognizer *)recognizer {
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
+        CGPoint translation = [recognizer translationInView:self];
+        
+        NSLog(@"New translation: %@", NSStringFromCGPoint(translation));
+        
+        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPanWithOffset:)]) {
+            [self.delegate floatingToolbar:self didTryToPanWithOffset:translation];
+        }
+        
+        [recognizer setTranslation:CGPointZero inView:self];
+    }
+}
+//--------------------->
 - (void) layoutSubviews {
     // set the frames for the 4 labels
     

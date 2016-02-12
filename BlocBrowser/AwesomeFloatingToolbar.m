@@ -20,6 +20,9 @@
 @property (nonatomic, strong) NSArray *labels;
 @property (nonatomic, weak) UILabel *currentLabel;
 
+// property to store the tap gesture recognizer
+ @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
+
 @end
 
 
@@ -77,9 +80,38 @@
         }
     }
     
+    // initialize TAP GESTURE RECOGNIZER
+    // #1
+    self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
+    // #2
+    [self addGestureRecognizer:self.tapGesture];
+    
     return self;
 }
 //-------------->
+//IMPLEMENT TAP GESTURE RECOGNIZER (TAP FIRED METHOD) (in self, which is a UIView object)
+- (void) tapFired:(UITapGestureRecognizer *)recognizer {
+    
+    // The first thing we do is check for the proper state.  A gesture recognizer has several states it can be in, and UIGestureRecognizerStateRecognized is the state in which the type of gesture it recognizes has been detected. In our case, a tap has been completed and the recognizer's state was switched to UIGestureRecognizerStateRecognized. If the gesture recognizer is in any other state, the gesture hasn't been detected.
+    
+    if (recognizer.state == UIGestureRecognizerStateRecognized) { // #3
+        //  calculates and stores an x-y coordinate of the gesture's location, with respect to self's bounds. For example, a tap detected in the top-left corner of the toolbar will register as (0,0).
+        
+        CGPoint location = [recognizer locationInView:self]; // #4
+        ///we invoke hitTest:withEvent: to determine which view received the tap
+        
+        UIView *tappedView = [self hitTest:location withEvent:nil]; // #5
+        
+        //we check if the view that was tapped was in fact one of our toolbar labels and if so, we verify our delegate for compatibility before performing the appropriate method call.
+        
+        if ([self.labels containsObject:tappedView]) { // #6
+            if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
+                [self.delegate floatingToolbar:self didSelectButtonWithTitle:((UILabel *)tappedView).text];
+            }
+        }
+    }
+}
+//----------------->
 - (void) layoutSubviews {
     // set the frames for the 4 labels
     
@@ -126,61 +158,61 @@
     }
 }
 //----------->
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
-    UILabel *label = [self labelFromTouches:touches withEvent:event];
-    
-    self.currentLabel = label;
-    self.currentLabel.alpha = 0.5;
-}
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UILabel *label = [self labelFromTouches:touches withEvent:event];
+//    
+//    self.currentLabel = label;
+//    self.currentLabel.alpha = 0.5;
+//}
 //-------->
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
-    UILabel *label = [self labelFromTouches:touches withEvent:event];
-    
-    if (self.currentLabel != label) {
-        // The label being touched is no longer the initial label
-        self.currentLabel.alpha = 1;
-    } else {
-        // The label being touched is the initial label
-        self.currentLabel.alpha = 0.5;
-    }
-}
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UILabel *label = [self labelFromTouches:touches withEvent:event];
+//    
+//    if (self.currentLabel != label) {
+//        // The label being touched is no longer the initial label
+//        self.currentLabel.alpha = 1;
+//    } else {
+//        // The label being touched is the initial label
+//        self.currentLabel.alpha = 0.5;
+//    }
+//}
 //------------->
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
-    UILabel *label = [self labelFromTouches:touches withEvent:event];
-    
-    if (self.currentLabel == label) {
-        NSLog(@"Label tapped: %@", self.currentLabel.text);
-        
-        NSString *preDefinedLabel = [[NSString alloc] init];
-        if ([self.currentLabel.text  isEqual: @"Back"]){
-           NSLog(@"testing %@", kWebBrowserBackString);
-            preDefinedLabel = kWebBrowserBackString;
-        }
-        else if ([self.currentLabel.text isEqual: @"Stop"]){
-            NSLog(@"testing %@", kWebBrowserStopString);
-            preDefinedLabel = kWebBrowserStopString;
-        }
-        else if ([self.currentLabel.text isEqual: @"Refresh"]){
-            NSLog(@"testing %@", kWebBrowserBackString);
-            preDefinedLabel = kWebBrowserRefreshString;
-        }
-        else if ([self.currentLabel.text isEqual: @"Forward"]){
-            NSLog(@"testing %@", kWebBrowserForwardString);
-            preDefinedLabel = kWebBrowserForwardString;
-        }
-        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
-            [self.delegate floatingToolbar:self didSelectButtonWithTitle:preDefinedLabel];
-        }
-    }
-    
-    self.currentLabel.alpha = 1;
-    self.currentLabel = nil;
-}
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
+//    UILabel *label = [self labelFromTouches:touches withEvent:event];
+//    
+//    if (self.currentLabel == label) {
+//        NSLog(@"Label tapped: %@", self.currentLabel.text);
+//        
+//        NSString *preDefinedLabel = [[NSString alloc] init];
+//        if ([self.currentLabel.text  isEqual: @"Back"]){
+//           NSLog(@"testing %@", kWebBrowserBackString);
+//            preDefinedLabel = kWebBrowserBackString;
+//        }
+//        else if ([self.currentLabel.text isEqual: @"Stop"]){
+//            NSLog(@"testing %@", kWebBrowserStopString);
+//            preDefinedLabel = kWebBrowserStopString;
+//        }
+//        else if ([self.currentLabel.text isEqual: @"Refresh"]){
+//            NSLog(@"testing %@", kWebBrowserBackString);
+//            preDefinedLabel = kWebBrowserRefreshString;
+//        }
+//        else if ([self.currentLabel.text isEqual: @"Forward"]){
+//            NSLog(@"testing %@", kWebBrowserForwardString);
+//            preDefinedLabel = kWebBrowserForwardString;
+//        }
+//        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
+//            [self.delegate floatingToolbar:self didSelectButtonWithTitle:preDefinedLabel];
+//        }
+//    }
+//    
+//    self.currentLabel.alpha = 1;
+//    self.currentLabel = nil;
+//}
 //------->
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
-    self.currentLabel.alpha = 1;
-    self.currentLabel = nil;
-}
+//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
+//    self.currentLabel.alpha = 1;
+//    self.currentLabel = nil;
+//}
 //------>
 #pragma mark - Button Enabling
 

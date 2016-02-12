@@ -23,10 +23,10 @@
 - (instancetype) initWithFourTitles:(NSArray *)titles;
 
 - (void) setEnabled:(BOOL)enabled forButtonWithTitle:(NSString *)title;
-- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
-- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
-- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
-- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
+//- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event;
+//- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event;
+//- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event;
+//- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event;
 
 
 @property (nonatomic, weak) id <AwesomeFloatingToolbarDelegate> delegate;

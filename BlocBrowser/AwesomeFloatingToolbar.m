@@ -26,6 +26,9 @@
 // property to recognize a pan gesture
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
 
+//add a long press gesture recognizer
+@property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
+
 @end
 
 
@@ -94,6 +97,12 @@
     self.panGesture = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(panFired:)];
     [self addGestureRecognizer:self.panGesture];
     
+    // initial a LONG PRESS GESTURE REGONIZER from longPressGesture property declared above
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPressFired:)];
+    longPress.minimumPressDuration = 1.0f;
+    self.longPressGesture = longPress;
+   [self addGestureRecognizer:self.longPressGesture];
+    
     return self;
 }
 //-------------->
@@ -140,6 +149,13 @@
     }
 }
 //--------------------->
+#pragma mark LONG PRESS GESTURE RECOGNIZER
+- (void) longPressFired:(UILongPressGestureRecognizer *) recognizer{
+    if (recognizer.state == UIGestureRecognizerStateBegan){
+        NSLog(@",,,,OOOOGAAAAAA:  LONG PRESS DETECTED\n");
+    }
+}
+//-------------------------->
 - (void) layoutSubviews {
     // set the frames for the 4 labels
     

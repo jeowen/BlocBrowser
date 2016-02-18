@@ -90,7 +90,7 @@ for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) 
     [super viewWillAppear:animated];
     // add a loop to handle positioning of each button
     self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
-    
+    NSLog(@"*****viewWillAppear triggered\n\n");
 }
 
 - (void) viewWillLayoutSubviews {  // over-rides some kind of layout method & handles positioning of each subview in the main view
@@ -104,13 +104,16 @@ for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) 
     // First, calculate some dimensions.
     static const CGFloat itemHeight = 50;
     CGFloat width = CGRectGetWidth(self.view.bounds);
-CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
+    CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
 
     
     // Now, assign the frames
     self.textField.frame = CGRectMake(0, 0, width, itemHeight);
     self.webView.frame = CGRectMake(0, CGRectGetMaxY(self.textField.frame), width, browserHeight);
 
+    // now change the frame of awesometoolbar
+    NSLog(@"==== viewWillLayoutSubviews triggered\n\n");
+    //self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 80);
     
 }
 #pragma mark - AwesomeFloatingToolbarDelegate
@@ -141,6 +144,34 @@ CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
     }
 }
 ////----------------------------.......----->
+#pragma mark TOOL BAR PINCH GESTURE RECOGNIZER > UPDATING FRAME (moving the frame that contains the view...)
+- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPinchWithScale:(CGFloat)scale {
+    
+    
+    // NEED TO use existing x, y origin
+    // get size of awesome toolbar and multiply width and height by scale value
+    NSLog(@"***\n***\n***got to pinch bar recognizer in ViewController! ... scale = %.2f", scale);
+    
+    CGPoint startingPoint = toolbar.frame.origin;
+//    //We begin by getting the top-left corner of where the toolbar is currently located. newPoint is where the future top-left corner is stored by adding the difference in x and the difference in y to the original top-left coordinate. Then we create a new CGRect which represents the toolbars potential new frame.
+//    
+//    CGPoint newPoint = CGPointMake(startingPoint.x + offset.x, startingPoint.y + offset.y);
+//    //We say potential because we want to make sure that we don't push the toolbar off the screen. CGRectContainsRect(CGRect rect1, CGRect rect2) will return YES if the rect2's bounds are contained entirely by rect1, or NO otherwise. If the test passes, we set the toolbar's new frame.
+//
+    CGFloat toolbarWidth = CGRectGetWidth(toolbar.frame);
+    CGFloat toolbarHeight = CGRectGetHeight(toolbar.frame);
+    
+    CGFloat newToolbarWidth = toolbarWidth * scale;
+    CGFloat newToolbarHeight = toolbarHeight * scale;
+    
+    CGRect potentialNewFrame = CGRectMake(startingPoint.x, startingPoint.y, newToolbarWidth, newToolbarHeight);
+    
+    if (CGRectContainsRect(self.view.bounds, potentialNewFrame)) {
+        toolbar.frame = potentialNewFrame;
+    }
+}
+////----------------------------.......----->
+
 //#pragma mark LONG PRESS GESTURE RECOGNIZER FIRED---> UPDATE FRAME
 //- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didLongPress:(NSArray *)colorSpun{
 //    //update colors with colors passed in... NSArray colorSpun

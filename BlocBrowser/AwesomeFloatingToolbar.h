@@ -16,9 +16,11 @@
 
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title;
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPanWithOffset:(CGPoint)offset;
+
+
 // add delegate to update view when a long press is detected
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didLongPress:(NSArray *)colorSpun;
-- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPinchWithScale:(CGFloat *)scale;
+- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didTryToPinchWithScale:(CGFloat)scale;
 
 @end
 

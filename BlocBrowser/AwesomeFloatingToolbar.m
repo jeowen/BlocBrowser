@@ -29,6 +29,9 @@
 ////add a long press gesture recognizer
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
 
+////add a pinch gesture recognizer
+@property (nonatomic, strong) UIPinchGestureRecognizer *pinchGesture;
+
 @end
 
 
@@ -118,6 +121,10 @@
     self.longPressGesture = longPress;
    [self addGestureRecognizer:self.longPressGesture];
     
+    // initialize a PINCHGESTURE RECOGNIZER from property pinchGesture declared above
+    self.pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(pinchFired:)];
+    [self addGestureRecognizer:self.pinchGesture];
+    
     return self;
 }
 //-------------->
@@ -162,6 +169,20 @@
         //At the end, we reset this translation to zero (CGPointZero) so that we can get the difference of each mini-pan every time the method is called.
         
         [recognizer setTranslation:CGPointZero inView:self];
+    }
+}
+//--------------------->
+# pragma mark PINCH GESTURE RECOGNIZER
+- (void) pinchFired:(UIPinchGestureRecognizer *)recognizer {
+    // capture the state of the recognizer... if it changes, you've recognized a pan gesture
+    NSLog(@"Pinch Gesture detected in AwesomeFloatingToolbar.m\n");
+    if (recognizer.state == UIGestureRecognizerStateEnded) {
+        CGFloat pinchscale = recognizer.scale;
+        NSLog(@"sPINCH GESTURE RECOGNIZER TRIGGERED in awesomefloatingtoolbar.m with scale = %f", pinchscale);
+        if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPinchWithScale:)]) {
+            [self.delegate floatingToolbar:self didTryToPinchWithScale: pinchscale];
+        }
+
     }
 }
 //--------------------->

@@ -16,8 +16,8 @@
 @interface AwesomeFloatingToolbar ()
 
 @property (nonatomic, strong) NSArray *currentTitles;
-@property (nonatomic, strong) NSArray *colors;
-@property (nonatomic, strong) NSArray *labels;
+@property (nonatomic, strong) NSMutableArray *colors;
+@property (nonatomic, strong) NSMutableArray *labels;
 @property (nonatomic, weak) UILabel *currentLabel;
 
 // property to store the tap gesture recognizer
@@ -26,7 +26,7 @@
 // property to recognize a pan gesture
 @property (nonatomic, strong) UIPanGestureRecognizer *panGesture;
 
-//add a long press gesture recognizer
+////add a long press gesture recognizer
 @property (nonatomic, strong) UILongPressGestureRecognizer *longPressGesture;
 
 @end
@@ -49,15 +49,29 @@
 - (instancetype) initWithFourTitles:(NSArray *)titles {
     // First, call the superclass (UIView)'s initializer, to make sure we do all that setup first.
     self = [super init];
+    UIColor *color1, *color2, *color3, *color4;
+    color1 =[UIColor colorWithRed:199/255.0 green:158/255.0 blue:203/255.0 alpha:1];
+    color2 =[UIColor colorWithRed:255/255.0 green:105/255.0 blue:97/255.0 alpha:1];
+    color3 =[UIColor colorWithRed:222/255.0 green:165/255.0 blue:164/255.0 alpha:1] ;
+    color4 =[UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1];
     
     if (self) {
         
         // Save the titles, and set the 4 colors
         self.currentTitles = titles;
-        self.colors = @[[UIColor colorWithRed:199/255.0 green:158/255.0 blue:203/255.0 alpha:1],
-                        [UIColor colorWithRed:255/255.0 green:105/255.0 blue:97/255.0 alpha:1],
-                        [UIColor colorWithRed:222/255.0 green:165/255.0 blue:164/255.0 alpha:1],
-                        [UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
+
+        
+//        self.colors = @[[UIColor colorWithRed:199/255.0 green:158/255.0 blue:203/255.0 alpha:1],
+//                        [UIColor colorWithRed:255/255.0 green:105/255.0 blue:97/255.0 alpha:1],
+//                        [UIColor colorWithRed:222/255.0 green:165/255.0 blue:164/255.0 alpha:1],
+//                        [UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
+
+//        self.colors = @[color1, color2, color3, color4];
+        self.colors = [[NSMutableArray alloc] init]; // what a bear!!!
+        self.colors[0] = color1; //purple
+        self.colors[1] = color2; //pink
+        self.colors[2] = color3; //redish
+        self.colors[3] = color4; //yellow
         
         NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
         
@@ -68,9 +82,10 @@
             label.alpha = 0.25;
             
             NSUInteger currentTitleIndex = [self.currentTitles indexOfObject:currentTitle]; // 0 through 3
+            
             NSString *titleForThisLabel = [self.currentTitles objectAtIndex:currentTitleIndex];
             UIColor *colorForThisLabel = [self.colors objectAtIndex:currentTitleIndex];
-            
+            NSLog(@"color = %@", colorForThisLabel);
             label.textAlignment = NSTextAlignmentCenter;
             label.font = [UIFont systemFontOfSize:10];
             label.text = titleForThisLabel;
@@ -109,7 +124,7 @@
 #pragma mark TAP GESTURE RECOGNIZER
 //IMPLEMENT TAP GESTURE RECOGNIZER (TAP FIRED METHOD) (in self, which is a UIView object)
 - (void) tapFired:(UITapGestureRecognizer *)recognizer {
-    
+    NSLog(@"Tap Gesture Detected\n");
     // The first thing we do is check for the proper state.  A gesture recognizer has several states it can be in, and UIGestureRecognizerStateRecognized is the state in which the type of gesture it recognizes has been detected. In our case, a tap has been completed and the recognizer's state was switched to UIGestureRecognizerStateRecognized. If the gesture recognizer is in any other state, the gesture hasn't been detected.
     
     if (recognizer.state == UIGestureRecognizerStateRecognized) { // #3
@@ -133,6 +148,7 @@
 # pragma mark PAN GESTURE RECOGNIZER
 - (void) panFired:(UIPanGestureRecognizer *)recognizer { ///??? how do these method calls work??? ///
     // capture the state of the recognizer... if it changes, you've recognized a pan gesture
+    NSLog(@"Pan Gesture detected\n");
     if (recognizer.state == UIGestureRecognizerStateChanged) {
         CGPoint translation = [recognizer translationInView:self];
         //we no longer care where the gesture occurred. What's important now is which direction it travelled in. A pan gesture recognizer's translation is how far the user's finger has moved in each direction since the touch event began. This method is called often during a pan gesture because a “full” pan as we perceive it is actually a linear collection of small pans traveling a few pixels at a time.
@@ -151,8 +167,48 @@
 //--------------------->
 #pragma mark LONG PRESS GESTURE RECOGNIZER
 - (void) longPressFired:(UILongPressGestureRecognizer *) recognizer{
+
     if (recognizer.state == UIGestureRecognizerStateBegan){
         NSLog(@",,,,OOOOGAAAAAA:  LONG PRESS DETECTED\n");
+        // GET CURRENT COLOR WHEEL AND THEN SPIN IT!
+//        self.colors = @[[UIColor colorWithRed:199/255.0 green:158/255.0 blue:203/255.0 alpha:1],
+//                        [UIColor colorWithRed:255/255.0 green:105/255.0 blue:97/255.0 alpha:1],
+//                        [UIColor colorWithRed:222/255.0 green:165/255.0 blue:164/255.0 alpha:1],
+//                        [UIColor colorWithRed:255/255.0 green:179/255.0 blue:71/255.0 alpha:1]];
+        
+        
+        NSArray *colorSpin = [NSMutableArray arrayWithArray:self.colors];
+        
+
+        int i = 1;
+        int j = 0;
+        for (UILabel *label in self.labels){
+            //replace label.backgroundColor in self.labels
+            UIColor *colorForThisLabel = [[UIColor alloc] init];
+            if (j==0){
+                colorForThisLabel = [colorSpin objectAtIndex:2];
+            }
+            else if (j == 1){
+                colorForThisLabel = [colorSpin objectAtIndex:0];
+            }
+            else if (j == 2){
+                colorForThisLabel = [colorSpin objectAtIndex:3];
+            }
+            else if (j == 3){
+                colorForThisLabel = [colorSpin objectAtIndex:1];
+            }
+            
+            // UIColor *colorForThisLabel = [colorSpin objectAtIndex:i];
+            [self.colors replaceObjectAtIndex:j withObject:colorForThisLabel];
+            label.backgroundColor = colorForThisLabel;
+            NSLog(@"i = %d, color = %@", i, label.backgroundColor);
+            [self addSubview:label];
+            if (i < 3){i++;}
+            else{i = 0;}
+            j++;
+        }
+
+        //-------------------->
     }
 }
 //-------------------------->

@@ -86,6 +86,13 @@ for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) 
     self.view = mainView;
 }
 
+- (void) viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    // add a loop to handle positioning of each button
+    self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
+    
+}
+
 - (void) viewWillLayoutSubviews {  // over-rides some kind of layout method & handles positioning of each subview in the main view
     [super viewWillLayoutSubviews];
     
@@ -104,8 +111,6 @@ CGFloat browserHeight = CGRectGetHeight(self.view.bounds) - itemHeight;
     self.textField.frame = CGRectMake(0, 0, width, itemHeight);
     self.webView.frame = CGRectMake(0, CGRectGetMaxY(self.textField.frame), width, browserHeight);
 
-    // add a loop to handle positioning of each button
-self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
     
 }
 #pragma mark - AwesomeFloatingToolbarDelegate
@@ -135,6 +140,13 @@ self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 40);
         toolbar.frame = potentialNewFrame;
     }
 }
+////----------------------------.......----->
+//#pragma mark LONG PRESS GESTURE RECOGNIZER FIRED---> UPDATE FRAME
+//- (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didLongPress:(NSArray *)colorSpun{
+//    //update colors with colors passed in... NSArray colorSpun
+//    self.awesomeToolbar.colors = [NSArray arrayWithArray:colorSpun];
+//    
+//}
 //----------------......--------->
  #pragma mark - UITextFieldDelegate
 //process text input for URL

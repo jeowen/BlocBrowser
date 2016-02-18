@@ -18,6 +18,7 @@
 @property (nonatomic, strong) NSArray *currentTitles;
 @property (nonatomic, strong) NSMutableArray *colors;
 @property (nonatomic, strong) NSMutableArray *labels;
+@property (nonatomic, strong) NSMutableArray *buttons;
 @property (nonatomic, weak) UILabel *currentLabel;
 
 // property to store the tap gesture recognizer
@@ -76,39 +77,92 @@
         self.colors[2] = color3; //redish
         self.colors[3] = color4; //yellow
         
-        NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
         
-        // Make the 4 labels
-        for (NSString *currentTitle in self.currentTitles) {
-            UILabel *label = [[UILabel alloc] init];
-            label.userInteractionEnabled = NO;
-            label.alpha = 0.25;
+        
+//        // Make the 4 labels
+//        NSMutableArray *labelsArray = [[NSMutableArray alloc] init];
+//        for (NSString *currentTitle in self.currentTitles) {
+//            UILabel *label = [[UILabel alloc] init];
+//            label.userInteractionEnabled = NO;
+//            label.alpha = 0.25;
+//            
+//            NSUInteger currentTitleIndex = [self.currentTitles indexOfObject:currentTitle]; // 0 through 3
+//            
+//            NSString *titleForThisLabel = [self.currentTitles objectAtIndex:currentTitleIndex];
+//            UIColor *colorForThisLabel = [self.colors objectAtIndex:currentTitleIndex];
+//            NSLog(@"color = %@", colorForThisLabel);
+//            label.textAlignment = NSTextAlignmentCenter;
+//            label.font = [UIFont systemFontOfSize:10];
+//            label.text = titleForThisLabel;
+//            label.backgroundColor = colorForThisLabel;
+//            label.textColor = [UIColor whiteColor];
+//            
+//            [labelsArray addObject:label];
+//        }
+//        
+//        self.labels = labelsArray;
+//        
+//        for (UILabel *thisLabel in self.labels) {
+//            [self addSubview:thisLabel];
+//        }
+        
+        // Make the 4 buttons
+        #pragma mark replacing labels with buttons
+        NSMutableArray *buttonsArray = [[NSMutableArray alloc] init];
+        for (NSString *currentTitle in self.currentTitles){
+            UIButton *button = [[UIButton alloc] init];
+            // set button properties:
+            // - button enabled = NO
+//            - button alpha (transparency) = 0.25
+//            - button text = button titles
+//            - button backgroundColor
+//            - button textColor
+            button.enabled = NO;
+            button.alpha = 0.25;
             
+            // set button text
             NSUInteger currentTitleIndex = [self.currentTitles indexOfObject:currentTitle]; // 0 through 3
-            
             NSString *titleForThisLabel = [self.currentTitles objectAtIndex:currentTitleIndex];
             UIColor *colorForThisLabel = [self.colors objectAtIndex:currentTitleIndex];
-            NSLog(@"color = %@", colorForThisLabel);
-            label.textAlignment = NSTextAlignmentCenter;
-            label.font = [UIFont systemFontOfSize:10];
-            label.text = titleForThisLabel;
-            label.backgroundColor = colorForThisLabel;
-            label.textColor = [UIColor whiteColor];
             
-            [labelsArray addObject:label];
+            [button setTitle:titleForThisLabel forState:UIControlStateNormal];
+            button.backgroundColor = colorForThisLabel;
+            [button setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+            // create highlighting on button press
+            [button setTitleColor:[UIColor blackColor]
+                               forState:UIControlStateHighlighted];
+           // do something when the button is pressed...
+            
+//            if (currentTitleIndex == 0){
+//               [button addTarget:self action:@selector(backButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+//            }
+//            else if (currentTitleIndex == 1){
+//                [button addTarget:self action:@selector(forwardButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+//            }
+//            else if (currentTitleIndex == 2){
+//                [button addTarget:self action:@selector(stopButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+//            }
+//            else if (currentTitleIndex == 3){
+//                [button addTarget:self action:@selector(refreshButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+//            }
+            [button addTarget:self action:@selector(buttonPressedAction:) forControlEvents:UIControlEventTouchUpInside];
+            
+            [buttonsArray addObject:button];
+        }
+        self.buttons = buttonsArray;
+        NSLog(@"buttons array = %@", self.buttons);
+        
+        for (UIButton *thisButton in self.buttons) {
+            [self addSubview:thisButton];
         }
         
-        self.labels = labelsArray;
-        
-        for (UILabel *thisLabel in self.labels) {
-            [self addSubview:thisLabel];
-        }
-    }
+    } // END if (self)
     
     // initialize TAP GESTURE RECOGNIZER
     // #1
     self.tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(tapFired:)];
     // #2
+    NSLog(@"attempting to add tap Gesture recognizer\n\n");
     [self addGestureRecognizer:self.tapGesture];
     
     // initialize a PAN GESTURE RECOGNIZER from property panGesture declared above
@@ -128,6 +182,30 @@
     return self;
 }
 //-------------->
+#pragma mark DETECT BUTTON PRESS
+- (void)buttonPressedAction:(id)sender{
+    UIButton *buttonPressed = (UIButton *)sender;
+    // int row = buttonPressed.tag;
+    NSString *buttonTitle = buttonPressed.titleLabel.text;
+    if ([buttonTitle isEqualToString:@"Back"]){
+        NSLog(@"BACK button press detected\n");
+    }
+    else if ([buttonTitle isEqualToString:@"Refresh"]){
+        NSLog(@"REFRESH button press detected\n");
+    }
+    else if ([buttonTitle isEqualToString:@"Stop"]){
+        NSLog(@"STOP button press detected\n");
+    }
+    else if ([buttonTitle isEqualToString:@"Forward"]){
+        NSLog(@"FORWARD button press detected\n");
+    }
+    if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
+        [self.delegate floatingToolbar:self didSelectButtonWithTitle:buttonTitle];
+    }
+    //NSLog(@"detected a button press\n");
+}
+//-------------->
+
 #pragma mark TAP GESTURE RECOGNIZER
 //IMPLEMENT TAP GESTURE RECOGNIZER (TAP FIRED METHOD) (in self, which is a UIView object)
 - (void) tapFired:(UITapGestureRecognizer *)recognizer {
@@ -144,6 +222,7 @@
         
         //we check if the view that was tapped was in fact one of our toolbar labels and if so, we verify our delegate for compatibility before performing the appropriate method call.
         
+//        if ([self.labels containsObject:tappedView]) { // #6
         if ([self.labels containsObject:tappedView]) { // #6
             if ([self.delegate respondsToSelector:@selector(floatingToolbar:didSelectButtonWithTitle:)]) {
                 [self.delegate floatingToolbar:self didSelectButtonWithTitle:((UILabel *)tappedView).text];
@@ -263,6 +342,36 @@
         
         thisLabel.frame = CGRectMake(labelX, labelY, labelWidth, labelHeight);
     }
+    
+    for (UIButton *thisButton in self.buttons) {
+        NSUInteger currentButtonIndex = [self.buttons indexOfObject:thisButton];
+        
+        CGFloat buttonHeight = CGRectGetHeight(self.bounds) / 2;
+        CGFloat buttonWidth = CGRectGetWidth(self.bounds) / 2;
+        CGFloat buttonX = 0;
+        CGFloat buttonY = 0;
+        
+        // adjust buttonX and buttonY for each button
+        if (currentButtonIndex < 2) {
+            // 0 or 1, so on top
+            buttonY = 0;
+        } else {
+            // 2 or 3, so on bottom
+            buttonY = CGRectGetHeight(self.bounds) / 2;
+        }
+        
+        if (currentButtonIndex % 2 == 0) { // is currentbuttonIndex evenly divisible by 2?
+            // 0 or 2, so on the left
+            buttonX = 0;
+        } else {
+            // 1 or 3, so on the right
+            buttonX = CGRectGetWidth(self.bounds) / 2;
+        }
+        
+        thisButton.frame = CGRectMake(buttonX, buttonY, buttonWidth, buttonHeight);
+    }
+    
+    
 }
 //----------->
 #pragma mark - Touch Handling
@@ -341,9 +450,12 @@
     NSUInteger index = [self.currentTitles indexOfObject:title];
     
     if (index != NSNotFound) {
-        UILabel *label = [self.labels objectAtIndex:index];
-        label.userInteractionEnabled = enabled;
-        label.alpha = enabled ? 1.0 : 0.25;
+//        UILabel *label = [self.labels objectAtIndex:index];
+//        label.userInteractionEnabled = enabled;
+//        label.alpha = enabled ? 1.0 : 0.25;
+        UIButton *button = [self.buttons objectAtIndex:index];
+        button.enabled = YES;
+        button.alpha = enabled ? 1.0 : 0.25;
     }
 }
 //----------------->

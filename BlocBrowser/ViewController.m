@@ -61,22 +61,7 @@
     self.awesomeToolbar = [[AwesomeFloatingToolbar alloc] initWithFourTitles:@[kWebBrowserBackString, kWebBrowserForwardString, kWebBrowserStopString, kWebBrowserRefreshString]];
     self.awesomeToolbar.delegate = self;
     
-//    
-//    NSString *urlString = @"http://wikipedia.org";
-//    NSURL *url = [NSURL URLWithString:urlString];
-//    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-//    [self.webView loadRequest:request];
-    
-    
-//    // add web view and textField for URL to main view
-//    [mainView addSubview:self.webView];
-//    [mainView addSubview:self.textField];
-//    
-//    // add buttons to main view
-//    [mainView addSubview:self.backButton];
-//    [mainView addSubview:self.forwardButton];
-//    [mainView addSubview:self.stopButton];
-//    [mainView addSubview:self.reloadButton];
+
     
     // we can make above code shorter with this loop:
 for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) {
@@ -113,10 +98,10 @@ for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) 
 
     // now change the frame of awesometoolbar
     NSLog(@"==== viewWillLayoutSubviews triggered\n\n");
-    //self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 80);
+    self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 80);
     
 }
-#pragma mark - AwesomeFloatingToolbarDelegate
+#pragma mark - AwesomeFloatingToolbarDelegate DID SELECT BUTTON WITH TITLE
 
 - (void) floatingToolbar:(AwesomeFloatingToolbar *)toolbar didSelectButtonWithTitle:(NSString *)title {
     if ([title isEqual:NSLocalizedString(@"Back", @"Back command")]) {

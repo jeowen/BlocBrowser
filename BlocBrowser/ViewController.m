@@ -98,7 +98,7 @@ for (UIView *viewToAdd in @[self.webView, self.textField, self.awesomeToolbar]) 
 
     // now change the frame of awesometoolbar
     NSLog(@"==== viewWillLayoutSubviews triggered\n\n");
-    self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 80);
+    //self.awesomeToolbar.frame = CGRectMake(5, 100, 300, 80);
     
 }
 #pragma mark - AwesomeFloatingToolbarDelegate DID SELECT BUTTON WITH TITLE

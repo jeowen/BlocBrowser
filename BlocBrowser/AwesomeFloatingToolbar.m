@@ -255,7 +255,7 @@
 - (void) pinchFired:(UIPinchGestureRecognizer *)recognizer {
     // capture the state of the recognizer... if it changes, you've recognized a pan gesture
     NSLog(@"Pinch Gesture detected in AwesomeFloatingToolbar.m\n");
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
+    if (recognizer.state == UIGestureRecognizerStateChanged) {
         CGFloat pinchscale = recognizer.scale;
         NSLog(@"sPINCH GESTURE RECOGNIZER TRIGGERED in awesomefloatingtoolbar.m with scale = %f", pinchscale);
         if ([self.delegate respondsToSelector:@selector(floatingToolbar:didTryToPinchWithScale:)]) {
